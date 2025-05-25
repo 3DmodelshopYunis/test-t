@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Model Marketplace</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>tailwind.config={theme:{extend:{colors:{primary:'#3176FF',secondary:''},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        body {
+            background-color: #121212;
+            color: #FFFFFF;
+        }
+        .gold-border {
+            border: 1px solid #FFB800;
+        }
+        .gold-text {
+            color: #FFB800;
+        }
+        .dark-bg {
+            background-color: #202020;
+        }
+        .model-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        .model-card:hover .model-image {
+            transform: scale(1.05);
+        }
+        .model-image {
+            transition: transform 0.3s ease;
+        }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .viewer-container {
+            perspective: 1000px;
+        }
+        .model-3d {
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+        }
+        .search-input:focus {
+            border-color: #FFB800;
+            outline: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <header class="bg-[#121212] border-b border-[#303030] sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center">
+                <a href="#" class="flex items-center">
+                    <span class="text-3xl font-['Pacifico'] text-white mr-2">logo</span>
+                </a>
+            </div>
+            
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#" class="text-white hover:text-[#FFB800] transition-colors">Ana Səhifə</a>
+                <a href="#" class="text-white hover:text-[#FFB800] transition-colors">Kataloq</a>
+                <a href="#" class="text-white hover:text-[#FFB800] transition-colors">Haqqımızda</a>
+                <a href="#" class="text-white hover:text-[#FFB800] transition-colors">Əlaqə</a>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <input type="text" placeholder="Axtarış..." class="search-input bg-[#202020] text-white px-4 py-2 rounded border border-[#303030] w-40 md:w-64">
+                    <button class="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#AAAAAA]">
+                        <div class="w-5 h-5 flex items-center justify-center">
+                            <i class="ri-search-line"></i>
+                        </div>
+                    </button>
+                </div>
+                
+                <button class="bg-[#202020] hover:bg-[#303030] text-white px-4 py-2 rounded border border-[#FFB800] transition-colors !rounded-button whitespace-nowrap">
+                    <span class="flex items-center">
+                        <div class="w-5 h-5 flex items-center justify-center mr-2">
+                            <i class="ri-user-line"></i>
+                        </div>
+                        Daxil ol
+                    </span>
+                </button>
+                
+                <div class="relative group">
+                    <button class="bg-[#202020] hover:bg-[#303030] text-white p-2 rounded border border-[#FFB800] transition-colors !rounded-button whitespace-nowrap">
+                        <div class="w-5 h-5 flex items-center justify-center">
+                            <i class="ri-shopping-cart-line"></i>
+                        </div>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-64 bg-[#202020] border border-[#303030] rounded shadow-lg hidden group-hover:block">
+                        <div class="p-4">
+                            <p class="text-center text-[#AAAAAA]">Səbətiniz boşdur</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <section class="mb-12">
+            <div class="relative rounded-lg overflow-hidden h-[400px] flex items-center">
+                <div style="background-image: url('https://readdy.ai/api/search-image?query=3D%20modeling%20software%20interface%20with%20dark%20theme%2C%20gold%20accents%2C%20showing%20a%20professional%20workspace%20with%203D%20models%20and%20rendering%20tools%2C%20futuristic%20design%2C%20high-quality%20digital%20art%2C%20professional%203D%20design%20environment&width=1280&height=600&seq=hero1&orientation=landscape'); background-size: cover; background-position: center;" class="absolute inset-0 opacity-50"></div>
+                <div class="absolute inset-0 bg-gradient-to-r from-[#121212] to-transparent"></div>
+                <div class="relative z-10 max-w-2xl ml-8 md:ml-16">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4">Premium 3D Modellər Bazarı</h1>
+                    <p class="text-xl text-[#AAAAAA] mb-8">Peşəkar layihələriniz üçün yüksək keyfiyyətli 3D modellər. İndi kəşf edin və yaradıcılığınızı yeni səviyyəyə qaldırın.</p>
+                    <div class="flex flex-wrap gap-4">
+                        <button class="bg-[#FFB800] hover:bg-[#E0A000] text-black px-6 py-3 rounded-md font-medium transition-colors !rounded-button whitespace-nowrap">Kataloqa baxın</button>
+                        <button class="bg-transparent hover:bg-[#303030] text-white border border-[#FFB800] px-6 py-3 rounded-md font-medium transition-colors !rounded-button whitespace-nowrap">Haqqımızda</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Populyar Modellər</h2>
+                <div class="flex items-center space-x-2">
+                    <button class="bg-[#202020] hover:bg-[#303030] text-white p-2 rounded border border-[#303030] transition-colors !rounded-button whitespace-nowrap">
+                        <div class="w-5 h-5 flex items-center justify-center">
+                            <i class="ri-filter-line"></i>
+                        </div>
+                    </button>
+                    <select class="bg-[#202020] text-white px-4 py-2 rounded border border-[#303030] pr-8 appearance-none">
+                        <option>Ən yeni</option>
+                        <option>Ən populyar</option>
+                        <option>Qiymətə görə</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Model Card 1 -->
+                <div class="model-card dark-bg rounded-lg overflow-hidden transition-all duration-300 border border-[#303030] hover:border-[#FFB800]">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="https://readdy.ai/api/search-image?query=3D%20model%20of%20a%20futuristic%20sports%20car%20with%20sleek%20design%2C%20detailed%20rendering%20on%20dark%20background%2C%20high%20quality%203D%20asset%2C%20professional%20modeling&width=400&height=300&seq=model1&orientation=landscape" alt="3D Model" class="w-full h-full object-cover model-image">
+                        <div class="absolute top-2 right-2 bg-[#FFB800] text-black px-2 py-1 rounded text-sm font-medium">Premium</div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold mb-1">Futuristik İdman Avtomobili</h3>
+                        <p class="text-[#AAAAAA] text-sm mb-3">Yüksək detallı, oyun və vizualizasiya üçün hazır</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[#FFB800] font-bold">89.99 ₼</span>
+                            <button class="bg-[#303030] hover:bg-[#404040] text-white px-3 py-1 rounded transition-colors !rounded-button whitespace-nowrap">Ətraflı baxış</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Model Card 2 -->
+                <div class="model-card dark-bg rounded-lg overflow-hidden transition-all duration-300 border border-[#303030] hover:border-[#FFB800]">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="https://readdy.ai/api/search-image?query=3D%20model%20of%20a%20modern%20architectural%20building%20with%20glass%20facade%2C%20detailed%20interior%20and%20exterior%2C%20professional%203D%20asset%20for%20architectural%20visualization%20on%20dark%20background&width=400&height=300&seq=model2&orientation=landscape" alt="3D Model" class="w-full h-full object-cover model-image">
+                        <div class="absolute top-2 right-2 bg-[#FFB800] text-black px-2 py-1 rounded text-sm font-medium">Premium</div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold mb-1">Müasir Memarlıq Binası</h3>
+                        <p class="text-[#AAAAAA] text-sm mb-3">Tam teksturlu, memarlıq vizualizasiyası üçün</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[#FFB800] font-bold">129.99 ₼</span>
+                            <button class="bg-[#303030] hover:bg-[#404040] text-white px-3 py-1 rounded transition-colors !rounded-button whitespace-nowrap">Ətraflı baxış</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Model Card 3 -->
+                <div class="model-card dark-bg rounded-lg overflow-hidden transition-all duration-300 border border-[#303030] hover:border-[#FFB800]">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="https://readdy.ai/api/search-image?query=3D%20model%20of%20a%20detailed%20sci-fi%20character%20with%20futuristic%20armor%20and%20weapons%2C%20high-poly%20model%20with%20PBR%20textures%2C%20game-ready%20asset%20on%20dark%20background&width=400&height=300&seq=model3&orientation=landscape" alt="3D Model" class="w-full h-full object-cover model-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold mb-1">Sci-Fi Döyüşçü Personajı</h3>
+                        <p class="text-[#AAAAAA] text-sm mb-3">Oyun hazır, tam rigged model</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[#FFB800] font-bold">69.99 ₼</span>
+                            <button class="bg-[#303030] hover:bg-[#404040] text-white px-3 py-1 rounded transition-colors !rounded-button whitespace-nowrap">Ətraflı baxış</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Model Card 4 -->
+                <div class="model-card dark-bg rounded-lg overflow-hidden transition-all duration-300 border border-[#303030] hover:border-[#FFB800]">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="https://readdy.ai/api/search-image?query=3D%20model%20of%20a%20detailed%20fantasy%20environment%20with%20ancient%20ruins%2C%20vegetation%20and%20magical%20elements%2C%20high-quality%20game%20asset%20with%20PBR%20textures%20on%20dark%20background&width=400&height=300&seq=model4&orientation=landscape" alt="3D Model" class="w-full h-full object-cover model-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold mb-1">Fantastik Mühit Səhnəsi</h3>
+                        <p class="text-[#AAAAAA] text-sm mb-3">Qədim xarabalıqlar və sehrli elementlər</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[#FFB800] font-bold">149.99 ₼</span>
+                            <button class="bg-[#303030] hover:bg-[#404040] text-white px-3 py-1 rounded transition-colors !rounded-button whitespace-nowrap">Ətraflı baxış</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Model Card 5 -->
+                <div class="model-card dark-bg rounded-lg overflow-hidden transition-all duration-300 border border-[#303030] hover:border-[#FFB800]">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="https://readdy.ai/api/search-image?query=3D%20model%20of%20a%20detailed%20interior%20scene%20with%20modern%20furniture%2C%20lighting%20and%20decorations%2C%20architectural%20visualization%20asset%20with%20high-quality%20materials%20on%20dark%20background&width=400&height=300&seq=model5&orientation=landscape" alt="3D Model" class="w-full h-full object-cover model-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold mb-1">Müasir İnteryer Səhnəsi</h3>
+                        <p class="text-[#AAAAAA] text-sm mb-3">Mebel və dekorasiya ilə tam dəst</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[#FFB800] font-bold">119.99 ₼</span>
+                            <button class="bg-[#303030] hover:bg-[#404040] text-white px-3 py-1 rounded transition-colors !rounded-button whitespace-nowrap">Ətraflı baxış</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Model Card 6 -->
+                <div class="model-card dark-bg rounded-lg overflow-hidden transition-all duration-300 border border-[#303030] hover:border-[#FFB800]">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="https://readdy.ai/api/search-image?query=3D%20model%20of%20a%20detailed%20robot%20or%20drone%20with%20mechanical%20parts%20and%20futuristic%20design%2C%20high-poly%20engineering%20model%20with%20technical%20details%20on%20dark%20background&width=400&height=300&seq=model6&orientation=landscape" alt="3D Model" class="w-full h-full object-cover model-image">
+                        <div class="absolute top-2 right-2 bg-[#FFB800] text-black px-2 py-1 rounded text-sm font-medium">Premium</div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold mb-1">Texniki Dron Modeli</h3>
+                        <p class="text-[#AAAAAA] text-sm mb-3">Mühəndislik layihələri üçün detallı model</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[#FFB800] font-bold">99.99 ₼</span>
+                            <button class="bg-[#303030] hover:bg-[#404040] text-white px-3 py-1 rounded transition-colors !rounded-button whitespace-nowrap">Ətraflı baxış</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Model Card 7 -->
+                <div class="model-card dark-bg rounded-lg overflow-hidden transition-all duration-300 border border-[#303030] hover:border-[#FFB800]">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="https://readdy.ai/api/search-image?query=3D%20model%20of%20a%20detailed%20weapon%20or%20gadget%20with%20mechanical%20parts%20and%20futuristic%20design%2C%20high-quality%20game%20asset%20with%20PBR%20textures%20on%20dark%20background&width=400&height=300&seq=model7&orientation=landscape" alt="3D Model" class="w-full h-full object-cover model-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold mb-1">Futuristik Silah Dəsti</h3>
+                        <p class="text-[#AAAAAA] text-sm mb-3">Oyun və film layihələri üçün</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[#FFB800] font-bold">79.99 ₼</span>
+                            <button class="bg-[#303030] hover:bg-[#404040] text-white px-3 py-1 rounded transition-colors !rounded-button whitespace-nowrap">Ətraflı baxış</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Model Card 8 -->
+                <div class="model-card dark-bg rounded-lg overflow-hidden transition-all duration-300 border border-[#303030] hover:border-[#FFB800]">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="https://readdy.ai/api/search-image?query=3D%20model%20of%20a%20detailed%20natural%20landscape%20with%20mountains%2C%20trees%20and%20water%2C%20environmental%203D%20asset%20with%20realistic%20textures%20on%20dark%20background&width=400&height=300&seq=model8&orientation=landscape" alt="3D Model" class="w-full h-full object-cover model-image">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold mb-1">Təbii Landşaft Səhnəsi</h3>
+                        <p class="text-[#AAAAAA] text-sm mb-3">Dağlar, meşələr və su elementləri</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[#FFB800] font-bold">159.99 ₼</span>
+                            <button class="bg-[#303030] hover:bg-[#404040] text-white px-3 py-1 rounded transition-colors !rounded-button whitespace-nowrap">Ətraflı baxış</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 flex justify-center">
+                <button class="bg-transparent hover:bg-[#303030] text-white border border-[#FFB800] px-6 py-3 rounded-md font-medium transition-colors !rounded-button whitespace-nowrap">Daha çox göstər</button>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">Kateqoriyalar</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <a href="#" class="dark-bg rounded-lg overflow-hidden transition-all duration-300 border border-[#303030] hover:border-[#FFB800] group">
+                    <div class="h-32 bg-[#202020] flex items-center justify-center">
+                        <div class="w-16 h-16 flex items-center justify-center text-[#FFB800] group-hover:scale-110 transition-transform">
+                            <i class="ri-building-4-line ri-3x"></i>
+                        </div>
+                    </div>
+                    <div class="p-4 text-center">
+                        <h3 class="text-lg font-semibold">Arxitektura</h3>
+                        <p class="text-[#AAAAAA] text-sm">142 model</p>
+                    </div>
+                </a>
+
+                <a href="#" class="dark-bg rounded-lg overflow-hidden transition-all duration-300 border border-[#303030] hover:border-[#FFB800] group">
+                    <div class="h-32 bg-[#202020] flex items-center justify-center">
+                        <div class="w-16 h-16 flex items-center justify-center text-[#FFB800] group-hover:scale-110 transition-transform">
+                            <i class="ri-car-line ri-3x"></i>
+                        </div>
+                    </div>
+                    <div class="p-4 text-center">
+                        <h3 class="text-lg font-semibold">Nəqliyyat</h3>
+                        <p class="text-[#AAAAAA] text-sm">98 model</p>
+                    </div>
+                </a>
+
+                <a href="#" class="dark-bg rounded-lg overflow-hidden transition-all duration-300 border border-[#303030] hover:border-[#FFB800] group">
+                    <div class="h-32 bg-[#202020] flex items-center justify-center">
+                        <div class="w-16 h-16 flex items-center justify-center text-[#FFB800] group-hover:scale-110 transition-transform">
+                            <i class="ri-user-3-line ri-3x"></i>
+                        </div>
+                    </div>
+                    <div class="p-4 text-center">
+                        <h3 class="text-lg font-semibold">Personajlar</h3>
+                        <p class="text-[#AAAAAA] text-sm">76 model</p>
+                    </div>
+                </a>
+
+                <a href="#" class="dark-bg rounded-lg overflow-hidden transition-all duration-300 border border-[#303030] hover:border-[#FFB800] group">
+                    <div class="h-32 bg-[#202020] flex items-center justify-center">
+                        <div class="w-16 h-16 flex items-center justify-center text-[#FFB800] group-hover:scale-110 transition-transform">
+                            <i class="ri-landscape-line ri-3x"></i>
+                        </div>
+                    </div>
+                    <div class="p-4 text-center">
+                        <h3 class="text-lg font-semibold">Mühitlər</h3>
+                        <p class="text-[#AAAAAA] text-sm">64 model</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- 3D Model Viewer Modal (Hidden by default) -->
+        <div id="modelViewerModal" class="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center hidden">
+            <div class="bg-[#202020] rounded-lg w-full max-w-4xl p-6 relative">
+                <button id="closeModal" class="absolute top-4 right-4 text-[#AAAAAA] hover:text-white">
+                    <div class="w-6 h-6 flex items-center justify-center">
+                        <i class="ri-close-line ri-2x"></i>
+                    </div>
+                </button>
+                
+                <h3 class="text-xl font-bold mb-4">Futuristik İdman Avtomobili</h3>
+                
+                <div class="viewer-container h-[400px] mb-6 bg-[#181818] rounded-lg overflow-hidden relative">
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <img src="https://readdy.ai/api/search-image?query=3D%20model%20of%20a%20futuristic%20sports%20car%20with%20sleek%20design%2C%20shown%20from%20multiple%20angles%20in%20a%20360-degree%20view%2C%20detailed%20rendering%20on%20dark%20background%2C%20high%20quality%203D%20asset%2C%20professional%20modeling&width=800&height=500&seq=model360&orientation=landscape" alt="3D Model 360 View" class="max-w-full max-h-full model-3d">
+                    </div>
+                    
+                    <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-4">
+                        <button class="bg-[#303030] hover:bg-[#404040] text-white p-2 rounded-full transition-colors">
+                            <div class="w-6 h-6 flex items-center justify-center">
+                                <i class="ri-arrow-left-line"></i>
+                            </div>
+                        </button>
+                        <button class="bg-[#303030] hover:bg-[#404040] text-white p-2 rounded-full transition-colors">
+                            <div class="w-6 h-6 flex items-center justify-center">
+                                <i class="ri-play-line"></i>
+                            </div>
+                        </button>
+                        <button class="bg-[#303030] hover:bg-[#404040] text-white p-2 rounded-full transition-colors">
+                            <div class="w-6 h-6 flex items-center justify-center">
+                                <i class="ri-arrow-right-line"></i>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="text-lg font-semibold mb-2">Məhsul haqqında</h4>
+                        <p class="text-[#AAAAAA] mb-4">Yüksək keyfiyyətli, tam teksturlu futuristik idman avtomobili modeli. Oyun, vizualizasiya və animasiya layihələri üçün ideal.</p>
+                        
+                        <h4 class="text-lg font-semibold mb-2">Texniki xüsusiyyətlər</h4>
+                        <ul class="text-[#AAAAAA] space-y-1 mb-4">
+                            <li>• Poligon sayı: 24,580</li>
+                            <li>• Teksturalar: 4K PBR</li>
+                            <li>• Formatlar: FBX, OBJ, Blender</li>
+                            <li>• Rigged: Xeyr</li>
+                            <li>• UV Mapped: Bəli</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="dark-bg p-4 rounded-lg border border-[#303030]">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-2xl font-bold text-[#FFB800]">89.99 ₼</span>
+                            <span class="text-[#AAAAAA] line-through">119.99 ₼</span>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <button class="w-full bg-[#FFB800] hover:bg-[#E0A000] text-black py-3 rounded font-medium transition-colors !rounded-button whitespace-nowrap">
+                                <span class="flex items-center justify-center">
+                                    <div class="w-5 h-5 flex items-center justify-center mr-2">
+                                        <i class="ri-shopping-cart-line"></i>
+                                    </div>
+                                    Səbətə əlavə et
+                                </span>
+                            </button>
+                            
+                            <button class="w-full bg-[#3176FF] hover:bg-[#2567E0] text-white py-3 rounded font-medium transition-colors !rounded-button whitespace-nowrap">
+                                <span class="flex items-center justify-center">
+                                    <div class="w-5 h-5 flex items-center justify-center mr-2">
+                                        <i class="ri-paypal-fill"></i>
+                                    </div>
+                                    PayPal ilə ödə
+                                </span>
+                            </button>
+                            
+                            <div class="flex justify-between text-[#AAAAAA] text-sm">
+                                <span>Lisenziya: Standart</span>
+                                <a href="#" class="text-[#FFB800] hover:underline">Daha ətraflı</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Upload Modal (Hidden by default) -->
+        <div id="adminUploadModal" class="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center hidden">
+            <div class="bg-[#202020] rounded-lg w-full max-w-2xl p-6 relative">
+                <button id="closeAdminModal" class="absolute top-4 right-4 text-[#AAAAAA] hover:text-white">
+                    <div class="w-6 h-6 flex items-center justify-center">
+                        <i class="ri-close-line ri-2x"></i>
+                    </div>
+                </button>
+                
+                <h3 class="text-xl font-bold mb-6">Yeni 3D Model Əlavə Et</h3>
+                
+                <form class="space-y-6">
+                    <div>
+                        <label class="block text-[#AAAAAA] mb-2">Model adı</label>
+                        <input type="text" class="w-full bg-[#303030] text-white px-4 py-2 rounded border border-[#404040] focus:border-[#FFB800] outline-none">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-[#AAAAAA] mb-2">Kateqoriya</label>
+                        <select class="w-full bg-[#303030] text-white px-4 py-2 rounded border border-[#404040] focus:border-[#FFB800] outline-none">
+                            <option>Arxitektura</option>
+                            <option>Nəqliyyat</option>
+                            <option>Personajlar</option>
+                            <option>Mühitlər</option>
+                            <option>Mebel</option>
+                            <option>Texnika</option>
+                        </select>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[#AAAAAA] mb-2">Qiymət (₼)</label>
+                            <input type="number" class="w-full bg-[#303030] text-white px-4 py-2 rounded border border-[#404040] focus:border-[#FFB800] outline-none">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-[#AAAAAA] mb-2">Endirimli qiymət (₼)</label>
+                            <input type="number" class="w-full bg-[#303030] text-white px-4 py-2 rounded border border-[#404040] focus:border-[#FFB800] outline-none">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-[#AAAAAA] mb-2">Təsvir</label>
+                        <textarea rows="3" class="w-full bg-[#303030] text-white px-4 py-2 rounded border border-[#404040] focus:border-[#FFB800] outline-none"></textarea>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-[#AAAAAA] mb-2">Texniki xüsusiyyətlər</label>
+                        <textarea rows="3" class="w-full bg-[#303030] text-white px-4 py-2 rounded border border-[#404040] focus:border-[#FFB800] outline-none"></textarea>
+                    </div>
+                    
+                    <div class="border-2 border-dashed border-[#404040] rounded-lg p-6 text-center">
+                        <div class="w-12 h-12 mx-auto mb-4 flex items-center justify-center text-[#FFB800]">
+                            <i class="ri-upload-cloud-line ri-3x"></i>
+                        </div>
+                        <p class="text-[#AAAAAA] mb-2">3D model fayllarını buraya sürükləyin və ya</p>
+                        <button type="button" class="bg-[#303030] hover:bg-[#404040] text-white px-4 py-2 rounded transition-colors !rounded-button whitespace-nowrap">Fayl seçin</button>
+                        <input type="file" class="hidden" multiple>
+                    </div>
+                    
+                    <div class="border-2 border-dashed border-[#404040] rounded-lg p-6 text-center">
+                        <div class="w-12 h-12 mx-auto mb-4 flex items-center justify-center text-[#FFB800]">
+                            <i class="ri-image-line ri-3x"></i>
+                        </div>
+                        <p class="text-[#AAAAAA] mb-2">Görüntü fayllarını buraya sürükləyin və ya</p>
+                        <button type="button" class="bg-[#303030] hover:bg-[#404040] text-white px-4 py-2 rounded transition-colors !rounded-button whitespace-nowrap">Fayl seçin</button>
+                        <input type="file" class="hidden" multiple accept="image/*">
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <input type="checkbox" id="premiumModel" class="hidden">
+                        <label for="premiumModel" class="flex items-center cursor-pointer">
+                            <span class="w-5 h-5 inline-block mr-2 rounded border border-[#FFB800] flex-shrink-0 relative">
+                                <span class="absolute inset-0 hidden bg-[#FFB800] rounded-sm" id="premiumCheckmark"></span>
+                            </span>
+                            <span>Premium model kimi işarələ</span>
+                        </label>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-4">
+                        <button type="button" id="cancelUpload" class="bg-transparent hover:bg-[#303030] text-white border border-[#404040] px-6 py-2 rounded transition-colors !rounded-button whitespace-nowrap">Ləğv et</button>
+                        <button type="submit" class="bg-[#FFB800] hover:bg-[#E0A000] text-black px-6 py-2 rounded font-medium transition-colors !rounded-button whitespace-nowrap">Əlavə et</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-[#181818] border-t border-[#303030] mt-12">
+        <div class="container mx-auto px-4 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <a href="#" class="flex items-center mb-4">
+                        <span class="text-3xl font-['Pacifico'] text-white mr-2">logo</span>
+                    </a>
+                    <p class="text-[#AAAAAA] mb-4">Peşəkar 3D modellərin satış platforması. Yüksək keyfiyyətli 3D modellər, teksturalar və materiallar.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-[#AAAAAA] hover:text-[#FFB800]">
+                            <div class="w-8 h-8 flex items-center justify-center">
+                                <i class="ri-facebook-fill"></i>
+                            </div>
+                        </a>
+                        <a href="#" class="text-[#AAAAAA] hover:text-[#FFB800]">
+                            <div class="w-8 h-8 flex items-center justify-center">
+                                <i class="ri-twitter-x-fill"></i>
+                            </div>
+                        </a>
+                        <a href="#" class="text-[#AAAAAA] hover:text-[#FFB800]">
+                            <div class="w-8 h-8 flex items-center justify-center">
+                                <i class="ri-instagram-fill"></i>
+                            </div>
+                        </a>
+                        <a href="#" class="text-[#AAAAAA] hover:text-[#FFB800]">
+                            <div class="w-8 h-8 flex items-center justify-center">
+                                <i class="ri-linkedin-fill"></i>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Keçidlər</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-[#AAAAAA] hover:text-[#FFB800]">Ana Səhifə</a></li>
+                        <li><a href="#" class="text-[#AAAAAA] hover:text-[#FFB800]">Kataloq</a></li>
+                        <li><a href="#" class="text-[#AAAAAA] hover:text-[#FFB800]">Kateqoriyalar</a></li>
+                        <li><a href="#" class="text-[#AAAAAA] hover:text-[#FFB800]">Ən populyar</a></li>
+                        <li><a href="#" class="text-[#AAAAAA] hover:text-[#FFB800]">Yeni əlavələr</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Məlumat</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-[#AAAAAA] hover:text-[#FFB800]">Haqqımızda</a></li>
+                        <li><a href="#" class="text-[#AAAAAA] hover:text-[#FFB800]">Əlaqə</a></li>
+                        <li><a href="#" class="text-[#AAAAAA] hover:text-[#FFB800]">İstifadə şərtləri</a></li>
+                        <li><a href="#" class="text-[#AAAAAA] hover:text-[#FFB800]">Gizlilik siyasəti</a></li>
+                        <li><a href="#" class="text-[#AAAAAA] hover:text-[#FFB800]">Lisenziya şərtləri</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Əlaqə</h4>
+                    <ul class="space-y-2 text-[#AAAAAA]">
+                        <li class="flex items-start">
+                            <div class="w-5 h-5 flex items-center justify-center mr-2 mt-1">
+                                <i class="ri-map-pin-line"></i>
+                            </div>
+                            <span>Bakı şəhəri, Nəsimi rayonu, Nizami küçəsi 42</span>
+                        </li>
+                        <li class="flex items-center">
+                            <div class="w-5 h-5 flex items-center justify-center mr-2">
+                                <i class="ri-mail-line"></i>
+                            </div>
+                            <span>info@3dmarket.az</span>
+                        </li>
+                        <li class="flex items-center">
+                            <div class="w-5 h-5 flex items-center justify-center mr-2">
+                                <i class="ri-phone-line"></i>
+                            </div>
+                            <span>+994 50 123 45 67</span>
+                        </li>
+                    </ul>
+                    
+                    <h4 class="text-lg font-semibold mt-6 mb-4">Ödəniş üsulları</h4>
+                    <div class="flex space-x-3">
+                        <div class="w-10 h-6 flex items-center justify-center bg-white rounded">
+                            <i class="ri-visa-fill text-blue-800 text-xl"></i>
+                        </div>
+                        <div class="w-10 h-6 flex items-center justify-center bg-white rounded">
+                            <i class="ri-mastercard-fill text-red-600 text-xl"></i>
+                        </div>
+                        <div class="w-10 h-6 flex items-center justify-center bg-white rounded">
+                            <i class="ri-paypal-fill text-blue-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-[#303030] mt-8 pt-8 text-center text-[#AAAAAA]">
+                <p>&copy; 2025 3D Model Marketplace. Bütün hüquqlar qorunur.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script id="modelViewerScript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const viewButtons = document.querySelectorAll('.model-card button');
+            const modelViewerModal = document.getElementById('modelViewerModal');
+            const closeModalButton = document.getElementById('closeModal');
+            
+            viewButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    modelViewerModal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+            
+            closeModalButton.addEventListener('click', function() {
+                modelViewerModal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            });
+            
+            // 3D model rotation simulation
+            let rotationAngle = 0;
+            const model3D = document.querySelector('.model-3d');
+            const playButton = document.querySelector('.viewer-container button:nth-child(2)');
+            let rotationInterval;
+            
+            playButton.addEventListener('click', function() {
+                if (rotationInterval) {
+                    clearInterval(rotationInterval);
+                    rotationInterval = null;
+                    playButton.innerHTML = '<div class="w-6 h-6 flex items-center justify-center"><i class="ri-play-line"></i></div>';
+                } else {
+                    rotationInterval = setInterval(function() {
+                        rotationAngle += 5;
+                        model3D.style.transform = `rotateY(${rotationAngle}deg)`;
+                    }, 100);
+                    playButton.innerHTML = '<div class="w-6 h-6 flex items-center justify-center"><i class="ri-pause-line"></i></div>';
+                }
+            });
+            
+            document.querySelector('.viewer-container button:first-child').addEventListener('click', function() {
+                rotationAngle -= 30;
+                model3D.style.transform = `rotateY(${rotationAngle}deg)`;
+            });
+            
+            document.querySelector('.viewer-container button:last-child').addEventListener('click', function() {
+                rotationAngle += 30;
+                model3D.style.transform = `rotateY(${rotationAngle}deg)`;
+            });
+        });
+    </script>
+
+    <script id="adminFunctionalityScript">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Admin functionality (normally would be protected by authentication)
+            const adminButton = document.createElement('button');
+            adminButton.className = 'fixed bottom-6 right-6 bg-[#FFB800] hover:bg-[#E0A000] text-black p-3 rounded-full shadow-lg transition-colors !rounded-button whitespace-nowrap';
+            adminButton.innerHTML = '<div class="w-6 h-6 flex items-center justify-center"><i class="ri-add-line"></i></div>';
+            adminButton.title = 'Yeni model əlavə et (yalnız admin)';
+            document.body.appendChild(adminButton);
+            
+            const adminUploadModal = document.getElementById('adminUploadModal');
+            const closeAdminModalButton = document.getElementById('closeAdminModal');
+            const cancelUploadButton = document.getElementById('cancelUpload');
+            
+            adminButton.addEventListener('click', function() {
+                adminUploadModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            closeAdminModalButton.addEventListener('click', function() {
+                adminUploadModal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            });
+            
+            cancelUploadButton.addEventListener('click', function() {
+                adminUploadModal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            });
+            
+            // Custom checkbox functionality
+            const premiumCheckbox = document.getElementById('premiumModel');
+            const premiumCheckmark = document.getElementById('premiumCheckmark');
+            
+            premiumCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    premiumCheckmark.classList.remove('hidden');
+                } else {
+                    premiumCheckmark.classList.add('hidden');
+                }
+            });
+            
+            premiumCheckbox.parentElement.addEventListener('click', function() {
+                premiumCheckbox.checked = !premiumCheckbox.checked;
+                if (premiumCheckbox.checked) {
+                    premiumCheckmark.classList.remove('hidden');
+                } else {
+                    premiumCheckmark.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
